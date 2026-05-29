@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FreedomPay Web App</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <style>
+        :root {
+            --bg-color-1: #1E1E1E;
+            --bg-color-2: #0A0A0A;
+            --main-border: 3px solid #333333;
+            --inner-border: 1px solid rgba(255, 255, 255, 0.05);
+            --card-border: 1px solid rgba(255, 255, 255, 0.1);
+            --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            --btn-gold: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%);
+            
+            --text-white: #FFFFFF;
+            --text-gray: #AAAAAA;
+            --text-dark: #121212;
+            
+            /* Ваши точные цвета из макета */
+            --color-bybit: #F7A600;
+            --color-pionex: #FF6B00;
+            --color-viza: #EF3124;
+            
+            /* Стили для ПОМОЩЬ */
+            --help-title-color: #F0EFE8;
+            --help-sub-color: #9A9A9E;
+            --help-icon-bg: #161618;
+            --help-icon-border: #1E1E21;
+            --help-arrow-color: #4A4A50;
+            --help-accent: #C8A84B; /* Ваш золотой для иконок */
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-white);
+            background: linear-gradient(135deg, var(--bg-color-1) 0%, var(--bg-color-2) 100%);
+            overflow: hidden; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ЗАСТАВКА */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 9999; background-color: #000;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-out;
+            border: var(--main-border); box-sizing: border-box;
+        }
+        #splash-screen::after {
+            content: ''; position: absolute; left: 0.26%; right: 0.26%; top: 0.12%; bottom: 0.12%;
+            border: var(--inner-border); pointer-events: none;
+        }
+        #splash-screen video { width: 100%; height: 100%; max-width: 450px; object-fit: cover; }
+
+        /* ИНТЕРФЕЙС */
+        #main-app {
+            position: relative; width: 100%; height: 100%;
+            opacity: 0; transition: opacity 0.5s ease-in; z-index: 1;
+            display: flex; flex-direction: column;
+        }
+
+        .screens-container {
+            flex-grow: 1; overflow-y: auto;
+            padding: 9.72% 7.69% 100px 7.69%;
+        }
+        
+        .screen { display: none; animation: fadeIn 0.3s ease; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .main-greeting { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 27px; line-height: 32px; color: var(--text-white); margin-bottom: 25px; }
+        .help-main-title { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 32px; line-height: 38px; color: var(--help-title-color); margin: 0 0 5px 0; }
+        .help-main-subtitle { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 14px; line-height: 18px; color: var(--help-sub-color); margin: 0 0 25px 0; }
+
+        /* КАРТОЧКИ НА ГЛАВНОЙ */
+        .card-btn {
+            background: var(--card-bg); border: var(--card-border); border-radius: 12px;
+            padding: 20px 20px 25px 30px;
+            margin-bottom: 20px;
+            position: relative;
+            cursor: pointer;
+            display: flex; flex-direction: column; align-items: flex-start;
+        }
+        
+        /* Маркеры цветов */
+        .card-btn::before { content: ''; position: absolute; left: 0; top: 20px; bottom: 20px; width: 4px; border-radius: 0 4px 4px 0; }
+        .card-btn.bybit::before { background-color: var(--color-bybit); }
+        .card-btn.pionex::before { background-color: var(--color-pionex); }
+        .card-btn.viza::before { background-color: var(--color-viza); }
+
+        .card-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; line-height: 31px; color: var(--text-white); margin: 0 0 5px 0; }
+        .card-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); margin: 0 0 18px 0; }
+
+        .btn-gold {
+            background: var(--btn-gold); color: var(--text-dark);
+            font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; line-height: 18px; text-align: center;
+            padding: 10px 24px; border-radius: 20px; border: none; outline: none;
+            transition: all 0.3s ease; cursor: pointer;
+        }
+        .btn-gold:hover { background: #333333; color: var(--text-white); }
+        .btn-gold:active { background: #222222; color: var(--text-white); transform: scale(0.97); }
+
+        /* ВНУТРЕННИЕ ЭКРАНЫ */
+        .details-title-wrap { position: relative; padding-left: 15px; margin-bottom: 15px; }
+        .details-title-wrap::before { content: ''; position: absolute; left: 0; top: 4px; width: 4px; height: 26px; border-radius: 4px; }
+        .details-bybit::before { background-color: var(--color-bybit); }
+        .details-pionex::before { background-color: var(--color-pionex); }
+        .details-viza::before { background-color: var(--color-viza); }
+        
+        .details-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; line-height: 31px; color: var(--text-white); }
+        .details-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); margin-bottom: 25px; }
+
+        /* ПОМОЩЬ */
+        .help-list-title {
+            font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px; line-height: 16px;
+            color: var(--help-sub-color); margin: 30px 0 15px 0; text-transform: uppercase;
+        }
+        
+        .help-item {
+            border-bottom: 1px solid rgba(255,255,255,0.1); padding: 15px 0;
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+        }
+        .help-item:active { background-color: rgba(255,255,255,0.05); }
+        
+        /* Иконки в темных квадратах */
+        .help-icon-wrap {
+            background: var(--help-icon-bg); border: 1.5px solid var(--help-icon-border); border-radius: 8px;
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            margin-right: 15px; flex-shrink: 0;
+        }
+        .help-icon-wrap svg {
+            width: 16px; height: 16px; fill: none; stroke: var(--help-accent); stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+        
+        .help-text { flex-grow: 1; }
+        .help-text-title { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--help-title-color); }
+        .help-text-sub { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 13px; line-height: 17px; color: var(--help-sub-color); margin-top: 3px; }
+        .help-arrow { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 20px; line-height: 26px; color: var(--help-arrow-color); }
+
+        /* МЕНЮ НИЗ */
+        #nav-menu {
+            position: fixed; left: 7.69%; right: 7.69%; bottom: 5.69%; height: 60px;
+            background: rgba(20, 20, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px; display: flex; align-items: center; justify-content: space-between;
+            padding: 6px; box-sizing: border-box; z-index: 10;
+        }
+        
+        .nav-btn {
+            flex: 1; text-align: center; padding: 12px 0;
+            font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px; line-height: 20px;
+            color: #888888; z-index: 2; position: relative; transition: color 0.3s ease; cursor: pointer;
+        }
+        .nav-btn.active { color: #FFFFFF; }
+        
+        #nav-indicator {
+            position: absolute; top: 6px; left: 6px; height: calc(100% - 12px); width: calc(50% - 6px);
+            background: rgba(255, 255, 255, 0.1); border-radius: 25px;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <video id="intro-video" muted playsinline autoplay>
+            <source src="video_freedom_pay.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="main-app">
+        <div class="screens-container">
+            
+            <div id="screen-home" class="screen active">
+                <div class="main-greeting">Привет, <span id="user-name">Гость</span>! 👋</div>
+                
+                <div class="card-btn bybit" onclick="openScreen('screen-bybit', 'Bybit')">
+                    <div class="card-title">Bybit Card</div>
+                    <div class="card-desc">Через номер Казахстана</div>
+                    <button class="btn-gold">Оформить</button>
+                </div>
+                
+                <div class="card-btn pionex" onclick="openScreen('screen-pionex', 'Pionex')">
+                    <div class="card-title">Pionex Card</div>
+                    <div class="card-desc">Бесплатный выпуск</div>
+                    <button class="btn-gold">Оформить</button>
+                </div>
+
+                <div class="card-btn viza" onclick="openScreen('screen-viza', 'Viza')">
+                    <div class="card-title">Viza Киргизия</div>
+                    <div class="card-desc">Сначала стань клиентом Альфа-Банк</div>
+                    <button class="btn-gold">Оформить</button>
+                </div>
+            </div>
+
+            <div id="screen-bybit" class="screen">
+                <div class="details-title-wrap details-bybit"><div class="details-title">Bybit Card</div></div>
+                <div class="details-desc">
+                    Криптокарта лицензированной площадки Bybit, платежной системы Mastercard.<br><br>
+                    Условия карты:<br>
+                    • обслуживание и выпуск бесплатно<br>
+                    • доставка физической карты 30$ (доставка в подсанкционные страны не осуществляется)<br>
+                    • интеграция в google pay и apple pay<br>
+                    • оплата зарубежных сервисов и Ai платформ
+                </div>
+                <button class="btn-gold" onclick="openExternalLink('https://www.bybit.com/en/cards/?ref=NYB3AEY&source=applet_invite')">Выпустить</button>
+            </div>
+
+            <div id="screen-pionex" class="screen">
+                <div class="details-title-wrap details-pionex"><div class="details-title">Pionex Card</div></div>
+                <div class="details-desc">
+                    Криптокарта лицензированной площадки Pionex, платежной системы Mastercard.<br><br>
+                    Условия карты:<br>
+                    • бесплатный выпуск и обслуживание<br>
+                    • 0,5$ за неудачную оплату<br>
+                    • интеграция в google pay и apple pay<br>
+                    • оплата зарубежных сервисов и Ai платформ<br>
+                    • не требуется иностранного гражданства и иностранного номера телефона
+                </div>
+                <button class="btn-gold" onclick="openExternalLink('https://accounts.pionex.com/ru/signUp?r=0qUsev9Z3zH')">Выпустить</button>
+            </div>
+
+            <div id="screen-viza" class="screen">
+                <div class="details-title-wrap details-viza"><div class="details-title">Viza Киргизия</div></div>
+                <div class="details-desc">
+                    Перед выпуском карты требуется стать клиентом Альфа-Банк.<br><br>
+                    Условия карты:<br>
+                    • выпустить карту Альфа-Банк<br>
+                    • оформление 1-2 рабочих дня<br>
+                    • доставка курьером от 3 рабочих дней
+                </div>
+                <button class="btn-gold" onclick="openExternalLink('https://alfa.me/6MmoxS')">Выпустить</button>
+            </div>
+
+            <div id="screen-help" class="screen">
+                <div class="help-main-title">Помощь</div>
+                <div class="help-main-subtitle">Видеоинструкции и поддержка</div>
+
+                <div class="help-item" onclick="openExternalLink('https://youtube.com/shorts/QfjNWrMgq_k?si=JoS9mpvurFsjf2UG')">
+                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>
+                    <div class="help-text">
+                        <div class="help-text-title">Оформление Pionex Card</div>
+                        <div class="help-text-sub">Пошаговое видео</div>
+                    </div>
+                    <div class="help-arrow">›</div>
+                </div>
+
+                <div class="help-item" onclick="openExternalLink('https://youtu.be/Pm-FEZKtVTY?si=89pa-fNWXxim6uc_')">
+                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>
+                    <div class="help-text">
+                        <div class="help-text-title">Оформление Bybit Mastercard</div>
+                        <div class="help-text-sub">Через Казахстан</div>
+                    </div>
+                    <div class="help-arrow">›</div>
+                </div>
+
+                <div class="help-list-title">ИСПОЛЬЗОВАНИЕ КАРТЫ</div>
+
+                <div class="help-item" onclick="showDevAlert()">
+                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    <div class="help-text">
+                        <div class="help-text-title">Верификация и активация</div>
+                        <div class="help-text-sub">KYC, первые шаги</div>
+                    </div>
+                    <div class="help-arrow">›</div>
+                </div>
+
+                <div class="help-item" onclick="showDevAlert()">
+                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+                    <div class="help-text">
+                        <div class="help-text-title">Пополнение и вывод</div>
+                        <div class="help-text-sub">Криптовалюта и фиат</div>
+                    </div>
+                    <div class="help-arrow">›</div>
+                </div>
+
+                <div class="help-item" onclick="showDevAlert()">
+                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
+                    <div class="help-text">
+                        <div class="help-text-title">Оплата сервисов</div>
+                        <div class="help-text-sub">OpenAI, Midjourney и др.</div>
+                    </div>
+                    <div class="help-arrow">›</div>
+                </div>
+
+                <div class="help-list-title">ПОДДЕРЖКА</div>
+
+                <div class="help-item" onclick="openTgLink('https://t.me/leonidsakmarov')">
+                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+                    <div class="help-text">
+                        <div class="help-text-title">Написать в поддержку</div>
+                        <div class="help-text-sub">Отвечаем за 24 часа</div>
+                    </div>
+                    <div class="help-arrow">›</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="nav-menu">
+            <div id="nav-indicator"></div>
+            <div class="nav-btn active" id="nav-tab-1" onclick="navClickLeft()">Главная</div>
+            <div class="nav-btn" id="nav-tab-2" onclick="navClickRight()">Помощь</div>
+        </div>
+    </div>
+
+    <script>
+        // Проверка среды запуска
+        let isTgWebApp = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
+        
+        if (isTgWebApp) {
+            let tg = window.Telegram.WebApp;
+            tg.expand();
+            let userData = tg.initDataUnsafe?.user;
+            document.getElementById('user-name').innerText = userData ? userData.first_name : "Гость";
+        } else {
+            document.getElementById('user-name').innerText = "Тестировщик";
+        }
+
+        // АНИМАЦИЯ ВИДЕО (исправленная)
+        const video = document.getElementById('intro-video');
+        const splash = document.getElementById('splash-screen');
+        const mainApp = document.getElementById('main-app');
+
+        function hideSplashScreen() {
+            splash.style.opacity = '0';
+            mainApp.style.opacity = '1';
+            setTimeout(() => splash.style.display = 'none', 500);
+        }
+
+        if (video) {
+            video.onended = hideSplashScreen;
+            // Пробуем запустить видео принудительно, если браузер блокирует автоплей
+            let playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    hideSplashScreen(); // Если автоплей жестко заблокирован, показываем приложение
+                });
+            }
+        }
+        
+        // Страховка от зависания (4 сек)
+        setTimeout(hideSplashScreen, 4000);
+
+
+        // НАВИГАЦИЯ
+        let currentScreenId = 'screen-home';
+
+        function openScreen(screenId, leftTabText) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            currentScreenId = screenId;
+            
+            if (screenId === 'screen-help') {
+                document.getElementById('nav-tab-1').innerText = 'Блог';
+                document.getElementById('nav-tab-1').classList.remove('active');
+                document.getElementById('nav-tab-2').classList.add('active');
+                document.getElementById('nav-indicator').style.transform = "translateX(100%)";
+            } else {
+                document.getElementById('nav-tab-1').innerText = leftTabText;
+                document.getElementById('nav-tab-2').classList.remove('active');
+                document.getElementById('nav-tab-1').classList.add('active');
+                document.getElementById('nav-indicator').style.transform = "translateX(0)";
+            }
+        }
+
+        function navClickLeft() {
+            if (currentScreenId !== 'screen-home') { openScreen('screen-home', 'Главная'); }
+        }
+
+        function navClickRight() {
+            if (currentScreenId !== 'screen-help') { openScreen('screen-help', 'Помощь'); }
+        }
+
+        function openExternalLink(url) { 
+            if (isTgWebApp) window.Telegram.WebApp.openLink(url); else window.open(url, '_blank');
+        }
+        function openTgLink(url) { 
+            if (isTgWebApp) window.Telegram.WebApp.openTelegramLink(url); else window.open(url, '_blank');
+        }
+        function showDevAlert() { 
+            if (isTgWebApp) window.Telegram.WebApp.showAlert('Раздел в разработке'); else alert('Раздел в разработке');
+        }
+    </script>
+</body>
+</html>
