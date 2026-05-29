@@ -25,7 +25,7 @@
             --text-gray: #AAAAAA;
             --text-dark: #121212;
             
-            /* Ваши точные цвета из макета */
+            /* Цвета маркеров карт */
             --color-bybit: #F7A600;
             --color-pionex: #FF6B00;
             --color-viza: #EF3124;
@@ -36,7 +36,7 @@
             --help-icon-bg: #161618;
             --help-icon-border: #1E1E21;
             --help-arrow-color: #4A4A50;
-            --help-accent: #C8A84B; /* Ваш золотой для иконок */
+            --help-accent: #C8A84B;
         }
 
         body, html {
@@ -48,7 +48,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ЗАСТАВКА */
+        /* ЗАСТАВКА (СТАРТОВОЕ СОСТОЯНИЕ) */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; background-color: #000;
@@ -62,7 +62,7 @@
         }
         #splash-screen video { width: 100%; height: 100%; max-width: 450px; object-fit: cover; }
 
-        /* ИНТЕРФЕЙС */
+        /* ИНТЕРФЕЙС (ИЗНАЧАЛЬНО СКРЫТ ДЛЯ АНИМАЦИИ) */
         #main-app {
             position: relative; width: 100%; height: 100%;
             opacity: 0; transition: opacity 0.5s ease-in; z-index: 1;
@@ -79,20 +79,16 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .main-greeting { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 27px; line-height: 32px; color: var(--text-white); margin-bottom: 25px; }
-        .help-main-title { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 32px; line-height: 38px; color: var(--help-title-color); margin: 0 0 5px 0; }
-        .help-main-subtitle { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 14px; line-height: 18px; color: var(--help-sub-color); margin: 0 0 25px 0; }
+        .help-main-title { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 32px; line-height: 38px; color: var(--help-title-color); margin: 0 0 15px 0; }
 
         /* КАРТОЧКИ НА ГЛАВНОЙ */
         .card-btn {
             background: var(--card-bg); border: var(--card-border); border-radius: 12px;
-            padding: 20px 20px 25px 30px;
-            margin-bottom: 20px;
-            position: relative;
-            cursor: pointer;
+            padding: 20px 20px 25px 30px; margin-bottom: 20px;
+            position: relative; cursor: pointer;
             display: flex; flex-direction: column; align-items: flex-start;
         }
         
-        /* Маркеры цветов */
         .card-btn::before { content: ''; position: absolute; left: 0; top: 20px; bottom: 20px; width: 4px; border-radius: 0 4px 4px 0; }
         .card-btn.bybit::before { background-color: var(--color-bybit); }
         .card-btn.pionex::before { background-color: var(--color-pionex); }
@@ -101,6 +97,7 @@
         .card-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; line-height: 31px; color: var(--text-white); margin: 0 0 5px 0; }
         .card-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); margin: 0 0 18px 0; }
 
+        /* КНОПКИ ДЕЙСТВИЙ */
         .btn-gold {
             background: var(--btn-gold); color: var(--text-dark);
             font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; line-height: 18px; text-align: center;
@@ -110,7 +107,17 @@
         .btn-gold:hover { background: #333333; color: var(--text-white); }
         .btn-gold:active { background: #222222; color: var(--text-white); transform: scale(0.97); }
 
-        /* ВНУТРЕННИЕ ЭКРАНЫ */
+        /* КНОПКИ УПРАВЛЕНИЯ НА ЭКРАНАХ ДЕТАЛЕЙ (Пункт 5) */
+        .details-controls { display: flex; gap: 12px; margin-top: 25px; }
+        
+        .btn-back {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-white); font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+            padding: 10px 24px; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .btn-back:active { background: rgba(255, 255, 255, 0.1); transform: scale(0.97); }
+
+        /* ВНУТРЕННИЕ ЭКРАНЫ КАРТ */
         .details-title-wrap { position: relative; padding-left: 15px; margin-bottom: 15px; }
         .details-title-wrap::before { content: ''; position: absolute; left: 0; top: 4px; width: 4px; height: 26px; border-radius: 4px; }
         .details-bybit::before { background-color: var(--color-bybit); }
@@ -118,12 +125,12 @@
         .details-viza::before { background-color: var(--color-viza); }
         
         .details-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; line-height: 31px; color: var(--text-white); }
-        .details-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); margin-bottom: 25px; }
+        .details-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); }
 
         /* ПОМОЩЬ */
         .help-list-title {
             font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px; line-height: 16px;
-            color: var(--help-sub-color); margin: 30px 0 15px 0; text-transform: uppercase;
+            color: var(--help-sub-color); margin: 30px 0 15px 0; text-transform: uppercase; letter-spacing: 0.5px;
         }
         
         .help-item {
@@ -132,7 +139,6 @@
         }
         .help-item:active { background-color: rgba(255,255,255,0.05); }
         
-        /* Иконки в темных квадратах */
         .help-icon-wrap {
             background: var(--help-icon-bg); border: 1.5px solid var(--help-icon-border); border-radius: 8px;
             width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
@@ -184,19 +190,19 @@
             <div id="screen-home" class="screen active">
                 <div class="main-greeting">Привет, <span id="user-name">Гость</span>! 👋</div>
                 
-                <div class="card-btn bybit" onclick="openScreen('screen-bybit', 'Bybit')">
+                <div class="card-btn bybit" onclick="openScreen('screen-bybit')">
                     <div class="card-title">Bybit Card</div>
                     <div class="card-desc">Через номер Казахстана</div>
                     <button class="btn-gold">Оформить</button>
                 </div>
                 
-                <div class="card-btn pionex" onclick="openScreen('screen-pionex', 'Pionex')">
+                <div class="card-btn pionex" onclick="openScreen('screen-pionex')">
                     <div class="card-title">Pionex Card</div>
                     <div class="card-desc">Бесплатный выпуск</div>
                     <button class="btn-gold">Оформить</button>
                 </div>
 
-                <div class="card-btn viza" onclick="openScreen('screen-viza', 'Viza')">
+                <div class="card-btn viza" onclick="openScreen('screen-viza')">
                     <div class="card-title">Viza Киргизия</div>
                     <div class="card-desc">Сначала стань клиентом Альфа-Банк</div>
                     <button class="btn-gold">Оформить</button>
@@ -213,7 +219,10 @@
                     • интеграция в google pay и apple pay<br>
                     • оплата зарубежных сервисов и Ai платформ
                 </div>
-                <button class="btn-gold" onclick="openExternalLink('https://www.bybit.com/en/cards/?ref=NYB3AEY&source=applet_invite')">Выпустить</button>
+                <div class="details-controls">
+                    <button class="btn-back" onclick="openScreen('screen-home')">← Назад</button>
+                    <button class="btn-gold" onclick="openExternalLink('https://www.bybit.com/en/cards/?ref=NYB3AEY&source=applet_invite')">Выпустить</button>
+                </div>
             </div>
 
             <div id="screen-pionex" class="screen">
@@ -227,7 +236,10 @@
                     • оплата зарубежных сервисов и Ai платформ<br>
                     • не требуется иностранного гражданства и иностранного номера телефона
                 </div>
-                <button class="btn-gold" onclick="openExternalLink('https://accounts.pionex.com/ru/signUp?r=0qUsev9Z3zH')">Выпустить</button>
+                <div class="details-controls">
+                    <button class="btn-back" onclick="openScreen('screen-home')">← Назад</button>
+                    <button class="btn-gold" onclick="openExternalLink('https://accounts.pionex.com/ru/signUp?r=0qUsev9Z3zH')">Выпустить</button>
+                </div>
             </div>
 
             <div id="screen-viza" class="screen">
@@ -239,12 +251,16 @@
                     • оформление 1-2 рабочих дня<br>
                     • доставка курьером от 3 рабочих дней
                 </div>
-                <button class="btn-gold" onclick="openExternalLink('https://alfa.me/6MmoxS')">Выпустить</button>
+                <div class="details-controls">
+                    <button class="btn-back" onclick="openScreen('screen-home')">← Назад</button>
+                    <button class="btn-gold" onclick="openExternalLink('https://alfa.me/6MmoxS')">Выпустить</button>
+                </div>
             </div>
 
             <div id="screen-help" class="screen">
                 <div class="help-main-title">Помощь</div>
-                <div class="help-main-subtitle">Видеоинструкции и поддержка</div>
+                
+                <div class="help-list-title" style="margin-top: 5px;">Видеоинструкции и поддержка</div>
 
                 <div class="help-item" onclick="openExternalLink('https://youtube.com/shorts/QfjNWrMgq_k?si=JoS9mpvurFsjf2UG')">
                     <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></div>
@@ -314,7 +330,6 @@
     </div>
 
     <script>
-        // Проверка среды запуска
         let isTgWebApp = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
         
         if (isTgWebApp) {
@@ -326,59 +341,62 @@
             document.getElementById('user-name').innerText = "Тестировщик";
         }
 
-        // АНИМАЦИЯ ВИДЕО (исправленная)
+        // АНИМАЦИЯ И СТРАХОВКА ЗАСТАВКИ
         const video = document.getElementById('intro-video');
         const splash = document.getElementById('splash-screen');
         const mainApp = document.getElementById('main-app');
 
         function hideSplashScreen() {
-            splash.style.opacity = '0';
-            mainApp.style.opacity = '1';
-            setTimeout(() => splash.style.display = 'none', 500);
+            if (splash.style.display !== 'none') {
+                splash.style.opacity = '0';
+                mainApp.style.opacity = '1';
+                setTimeout(() => splash.style.display = 'none', 500);
+            }
         }
 
         if (video) {
             video.onended = hideSplashScreen;
-            // Пробуем запустить видео принудительно, если браузер блокирует автоплей
             let playPromise = video.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    hideSplashScreen(); // Если автоплей жестко заблокирован, показываем приложение
+                    console.log("Автоплей заблокирован браузером, включается страховка.");
                 });
             }
         }
         
-        // Страховка от зависания (4 сек)
+        // Жесткая страховка на 4 секунды
         setTimeout(hideSplashScreen, 4000);
-
 
         // НАВИГАЦИЯ
         let currentScreenId = 'screen-home';
 
-        function openScreen(screenId, leftTabText) {
+        function openScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
             currentScreenId = screenId;
             
+            // Логика перемещения ползунка в меню (Пункт 4 - без переименования кнопок)
             if (screenId === 'screen-help') {
-                document.getElementById('nav-tab-1').innerText = 'Блог';
                 document.getElementById('nav-tab-1').classList.remove('active');
                 document.getElementById('nav-tab-2').classList.add('active');
                 document.getElementById('nav-indicator').style.transform = "translateX(100%)";
-            } else {
-                document.getElementById('nav-tab-1').innerText = leftTabText;
+            } else if (screenId === 'screen-home') {
                 document.getElementById('nav-tab-2').classList.remove('active');
                 document.getElementById('nav-tab-1').classList.add('active');
                 document.getElementById('nav-indicator').style.transform = "translateX(0)";
+            } else {
+                // Если мы внутри карточек, гасим обе кнопки меню, ползунок прячем
+                document.getElementById('nav-tab-1').classList.remove('active');
+                document.getElementById('nav-tab-2').classList.remove('active');
             }
         }
 
         function navClickLeft() {
-            if (currentScreenId !== 'screen-home') { openScreen('screen-home', 'Главная'); }
+            if (currentScreenId !== 'screen-home') { openScreen('screen-home'); }
         }
 
         function navClickRight() {
-            if (currentScreenId !== 'screen-help') { openScreen('screen-help', 'Помощь'); }
+            if (currentScreenId !== 'screen-help') { openScreen('screen-help'); }
         }
 
         function openExternalLink(url) { 
