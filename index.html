@@ -60,9 +60,16 @@
             content: ''; position: absolute; left: 0.26%; right: 0.26%; top: 0.12%; bottom: 0.12%;
             border: var(--inner-border); pointer-events: none;
         }
-        #splash-screen video { width: 100%; height: 100%; max-width: 450px; object-fit: cover; }
+        
+        /* ИСПРАВЛЕНИЕ ДЛЯ ТЕЛЕФОНОВ: pointer-events: none блокирует нажатие на паузу */
+        #splash-screen video { 
+            width: 100%; height: 100%; max-width: 450px; 
+            object-fit: cover; 
+            pointer-events: none; 
+            user-select: none;
+        }
 
-        /* ИНТЕРФЕЙС (ИЗНАЧАЛЬНО СКРЫТ ДЛЯ АНИМАЦИИ) */
+        /* ИНТЕРФЕЙС */
         #main-app {
             position: relative; width: 100%; height: 100%;
             opacity: 0; transition: opacity 0.5s ease-in; z-index: 1;
@@ -97,7 +104,6 @@
         .card-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; line-height: 31px; color: var(--text-white); margin: 0 0 5px 0; }
         .card-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); margin: 0 0 18px 0; }
 
-        /* КНОПКИ ДЕЙСТВИЙ */
         .btn-gold {
             background: var(--btn-gold); color: var(--text-dark);
             font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; line-height: 18px; text-align: center;
@@ -107,7 +113,6 @@
         .btn-gold:hover { background: #333333; color: var(--text-white); }
         .btn-gold:active { background: #222222; color: var(--text-white); transform: scale(0.97); }
 
-        /* КНОПКИ УПРАВЛЕНИЯ НА ЭКРАНАХ ДЕТАЛЕЙ (Пункт 5) */
         .details-controls { display: flex; gap: 12px; margin-top: 25px; }
         
         .btn-back {
@@ -179,14 +184,13 @@
 <body>
 
     <div id="splash-screen">
-        <video id="intro-video" muted playsinline autoplay>
+        <video id="intro-video" muted playsinline autoplay disablePictureInPicture preload="auto">
             <source src="video_freedom_pay.mp4" type="video/mp4">
         </video>
     </div>
 
     <div id="main-app">
         <div class="screens-container">
-            
             <div id="screen-home" class="screen active">
                 <div class="main-greeting">Привет, <span id="user-name">Гость</span>! 👋</div>
                 
@@ -341,7 +345,7 @@
             document.getElementById('user-name').innerText = "Тестировщик";
         }
 
-        // АНИМАЦИЯ И СТРАХОВКА ЗАСТАВКИ
+        // ЖЕСТКАЯ НАСТРОЙКА ВИДЕО ДЛЯ ТЕЛЕФОНОВ
         const video = document.getElementById('intro-video');
         const splash = document.getElementById('splash-screen');
         const mainApp = document.getElementById('main-app');
@@ -355,16 +359,22 @@
         }
 
         if (video) {
-            video.onended = hideSplashScreen;
+            // Принудительно отключаем звук на уровне JS (требование мобильных браузеров)
+            video.muted = true;
+            video.defaultMuted = true;
+            video.setAttribute('playsinline', '');
+
             let playPromise = video.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    console.log("Автоплей заблокирован браузером, включается страховка.");
+                    console.log("Автоплей всё-таки заблокирован телефоном:", error);
                 });
             }
+            // Скрываем заставку, когда видео заканчивается
+            video.onended = hideSplashScreen;
         }
         
-        // Жесткая страховка на 4 секунды
+        // Жесткая страховка: если через 4 секунды видео всё еще висит — убираем
         setTimeout(hideSplashScreen, 4000);
 
         // НАВИГАЦИЯ
@@ -375,7 +385,6 @@
             document.getElementById(screenId).classList.add('active');
             currentScreenId = screenId;
             
-            // Логика перемещения ползунка в меню (Пункт 4 - без переименования кнопок)
             if (screenId === 'screen-help') {
                 document.getElementById('nav-tab-1').classList.remove('active');
                 document.getElementById('nav-tab-2').classList.add('active');
@@ -385,7 +394,6 @@
                 document.getElementById('nav-tab-1').classList.add('active');
                 document.getElementById('nav-indicator').style.transform = "translateX(0)";
             } else {
-                // Если мы внутри карточек, гасим обе кнопки меню, ползунок прячем
                 document.getElementById('nav-tab-1').classList.remove('active');
                 document.getElementById('nav-tab-2').classList.remove('active');
             }
