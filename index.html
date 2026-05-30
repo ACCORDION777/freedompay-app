@@ -44,7 +44,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ЗАСТАВКА (ПОЛНОСТЬЮ УБРАНЫ РАМКИ) */
+        /* ЗАСТАВКА */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; background-color: #000;
@@ -61,7 +61,6 @@
             border: none; outline: none;
         }
 
-        /* ОТКЛЮЧЕНИЕ СИСТЕМНОГО ПЛЕЕРА */
         video::-webkit-media-controls,
         video::-webkit-media-controls-enclosure,
         video::-webkit-media-controls-panel {
@@ -85,14 +84,22 @@
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .main-greeting { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 27px; line-height: 32px; color: var(--text-white); margin-bottom: 25px; }
+        /* ИСПРАВЛЕНИЕ 1: Единый пропорциональный шрифт для приветствия */
+        .main-greeting { 
+            font-family: 'DM Sans', sans-serif; 
+            font-weight: 700; 
+            font-size: 24px; 
+            line-height: 32px; 
+            color: var(--text-white); 
+            margin-bottom: 25px; 
+        }
         .help-main-title { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 32px; line-height: 38px; color: var(--help-title-color); margin: 0 0 15px 0; }
 
-        /* КАРТОЧКИ НА ГЛАВНОЙ */
+        /* КАРТОЧКИ НА ГЛАВНОЙ (Убран cursor: pointer) */
         .card-btn {
             background: var(--card-bg); border: var(--card-border); border-radius: 12px;
             padding: 20px 20px 25px 30px; margin-bottom: 20px;
-            position: relative; cursor: pointer;
+            position: relative;
             display: flex; flex-direction: column; align-items: flex-start;
         }
         
@@ -104,23 +111,29 @@
         .card-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; line-height: 31px; color: var(--text-white); margin: 0 0 5px 0; }
         .card-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); margin: 0 0 18px 0; }
 
+        /* ИСПРАВЛЕНИЕ 3 и 4: Анимации золотой кнопки */
         .btn-gold {
             background: var(--btn-gold); color: var(--text-dark);
             font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; line-height: 18px; text-align: center;
             padding: 10px 24px; border-radius: 20px; border: none; outline: none;
-            transition: all 0.3s ease; cursor: pointer;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease; /* Плавность */
         }
-        .btn-gold:hover { background: #333333; color: var(--text-white); }
-        .btn-gold:active { background: #222222; color: var(--text-white); transform: scale(0.97); }
+        .btn-gold:hover { background: #E0BA5C; }
+        .btn-gold:active { transform: scale(0.95); }
 
         .details-controls { display: flex; gap: 12px; margin-top: 25px; }
         
+        /* ИСПРАВЛЕНИЕ 5: Анимации кнопки Назад */
         .btn-back {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15);
             color: var(--text-white); font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
-            padding: 10px 24px; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;
+            padding: 10px 24px; border-radius: 20px; outline: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease; /* Плавность */
         }
-        .btn-back:active { background: rgba(255, 255, 255, 0.1); transform: scale(0.97); }
+        .btn-back:hover { background: rgba(255, 255, 255, 0.15); }
+        .btn-back:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.2); }
 
         /* ВНУТРЕННИЕ ЭКРАНЫ КАРТ */
         .details-title-wrap { position: relative; padding-left: 15px; margin-bottom: 15px; }
@@ -141,8 +154,10 @@
         .help-item {
             border-bottom: 1px solid rgba(255,255,255,0.1); padding: 15px 0;
             display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+            transition: background 0.2s ease;
         }
-        .help-item:active { background-color: rgba(255,255,255,0.05); }
+        .help-item:hover { background-color: rgba(255,255,255,0.02); }
+        .help-item:active { background-color: rgba(255,255,255,0.08); }
         
         .help-icon-wrap {
             background: var(--help-icon-bg); border: 1.5px solid var(--help-icon-border); border-radius: 8px;
@@ -181,7 +196,7 @@
         }
     </style>
 </head>
-<body>
+<body ontouchstart="">
 
     <div id="splash-screen">
         <video id="intro-video" muted playsinline webkit-playsinline autoplay disablePictureInPicture preload="auto">
@@ -194,22 +209,22 @@
             <div id="screen-home" class="screen active">
                 <div class="main-greeting">Привет, <span id="user-name">Гость</span>! 👋</div>
                 
-                <div class="card-btn bybit" onclick="openScreen('screen-bybit')">
+                <div class="card-btn bybit">
                     <div class="card-title">Bybit Card</div>
                     <div class="card-desc">Через номер Казахстана</div>
-                    <button class="btn-gold">Оформить</button>
+                    <button class="btn-gold" onclick="openScreen('screen-bybit')">Оформить</button>
                 </div>
                 
-                <div class="card-btn pionex" onclick="openScreen('screen-pionex')">
+                <div class="card-btn pionex">
                     <div class="card-title">Pionex Card</div>
                     <div class="card-desc">Бесплатный выпуск</div>
-                    <button class="btn-gold">Оформить</button>
+                    <button class="btn-gold" onclick="openScreen('screen-pionex')">Оформить</button>
                 </div>
 
-                <div class="card-btn viza" onclick="openScreen('screen-viza')">
+                <div class="card-btn viza">
                     <div class="card-title">Viza Киргизия</div>
                     <div class="card-desc">Сначала стань клиентом Альфа-Банк</div>
-                    <button class="btn-gold">Оформить</button>
+                    <button class="btn-gold" onclick="openScreen('screen-viza')">Оформить</button>
                 </div>
             </div>
 
@@ -334,13 +349,11 @@
     </div>
 
     <script>
-        // ШАГ 1: МГНОВЕННОЕ РАЗВЕРТЫВАНИЕ НА ПОЛНЫЙ ЭКРАН (Решение проблемы 2)
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
         }
 
-        // ШАГ 2: ИМЯ ПОЛЬЗОВАТЕЛЯ
         let isTgWebApp = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
         if (isTgWebApp) {
             let userData = window.Telegram.WebApp.initDataUnsafe?.user;
@@ -349,14 +362,13 @@
             document.getElementById('user-name').innerText = "Тестировщик";
         }
 
-        // ШАГ 3: ЖЕЛЕЗНАЯ ЛОГИКА ЗАСТАВКИ (Решение проблем 1 и 3)
         const video = document.getElementById('intro-video');
         const splash = document.getElementById('splash-screen');
         const mainApp = document.getElementById('main-app');
         let isSplashHidden = false;
 
         function hideSplashScreen() {
-            if (isSplashHidden) return; // Чтобы функция не сработала дважды
+            if (isSplashHidden) return;
             isSplashHidden = true;
             
             splash.style.opacity = '0';
@@ -364,7 +376,7 @@
             
             setTimeout(() => {
                 splash.style.display = 'none';
-                if(video) video.remove(); // Удаляем видео из памяти телефона
+                if(video) video.remove(); 
             }, 400);
         }
 
@@ -381,10 +393,8 @@
             video.onended = hideSplashScreen;
         }
         
-        // ЖЕЛЕЗНАЯ СТРАХОВКА: Ровно через 3.5 секунды экран в любом случае убирается!
         setTimeout(hideSplashScreen, 3500);
 
-        // НАВИГАЦИЯ (БЕЗ ИЗМЕНЕНИЙ)
         let currentScreenId = 'screen-home';
 
         function openScreen(screenId) {
