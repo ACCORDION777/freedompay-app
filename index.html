@@ -15,8 +15,6 @@
         :root {
             --bg-color-1: #1E1E1E;
             --bg-color-2: #0A0A0A;
-            --main-border: 3px solid #333333;
-            --inner-border: 1px solid rgba(255, 255, 255, 0.05);
             --card-border: 1px solid rgba(255, 255, 255, 0.1);
             --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
             --btn-gold: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%);
@@ -25,12 +23,10 @@
             --text-gray: #AAAAAA;
             --text-dark: #121212;
             
-            /* Цвета маркеров карт */
             --color-bybit: #F7A600;
             --color-pionex: #FF6B00;
             --color-viza: #EF3124;
             
-            /* Стили для ПОМОЩЬ */
             --help-title-color: #F0EFE8;
             --help-sub-color: #9A9A9E;
             --help-icon-bg: #161618;
@@ -48,32 +44,27 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ЗАСТАВКА (СТАРТОВОЕ СОСТОЯНИЕ) */
+        /* ЗАСТАВКА (ПОЛНОСТЬЮ УБРАНЫ РАМКИ) */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; background-color: #000;
             display: flex; justify-content: center; align-items: center;
-            transition: opacity 0.5s ease-out;
-            border: var(--main-border); box-sizing: border-box;
-        }
-        #splash-screen::after {
-            content: ''; position: absolute; left: 0.26%; right: 0.26%; top: 0.12%; bottom: 0.12%;
-            border: var(--inner-border); pointer-events: none;
+            transition: opacity 0.4s ease-out;
+            border: none; outline: none;
         }
         
         #splash-screen video { 
             width: 100%; height: 100%; max-width: 450px; 
             object-fit: cover; 
-            pointer-events: none; /* Запрещаем клики по видео */
+            pointer-events: none; 
             user-select: none;
+            border: none; outline: none;
         }
 
-        /* ЖЕСТКОЕ ОТКЛЮЧЕНИЕ СИСТЕМНОГО ПЛЕЕРА НА IOS И ANDROID */
+        /* ОТКЛЮЧЕНИЕ СИСТЕМНОГО ПЛЕЕРА */
         video::-webkit-media-controls,
         video::-webkit-media-controls-enclosure,
-        video::-webkit-media-controls-panel,
-        video::-webkit-media-controls-play-button,
-        video::-webkit-media-controls-start-playback-button {
+        video::-webkit-media-controls-panel {
             display: none !important;
             -webkit-appearance: none !important;
         }
@@ -81,7 +72,7 @@
         /* ИНТЕРФЕЙС */
         #main-app {
             position: relative; width: 100%; height: 100%;
-            opacity: 0; transition: opacity 0.5s ease-in; z-index: 1;
+            opacity: 0; transition: opacity 0.4s ease-in; z-index: 1;
             display: flex; flex-direction: column;
         }
 
@@ -338,3 +329,100 @@
         <div id="nav-menu">
             <div id="nav-indicator"></div>
             <div class="nav-btn active" id="nav-tab-1" onclick="navClickLeft()">Главная</div>
+            <div class="nav-btn" id="nav-tab-2" onclick="navClickRight()">Помощь</div>
+        </div>
+    </div>
+
+    <script>
+        // ШАГ 1: МГНОВЕННОЕ РАЗВЕРТЫВАНИЕ НА ПОЛНЫЙ ЭКРАН (Решение проблемы 2)
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
+
+        // ШАГ 2: ИМЯ ПОЛЬЗОВАТЕЛЯ
+        let isTgWebApp = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
+        if (isTgWebApp) {
+            let userData = window.Telegram.WebApp.initDataUnsafe?.user;
+            document.getElementById('user-name').innerText = userData ? userData.first_name : "Гость";
+        } else {
+            document.getElementById('user-name').innerText = "Тестировщик";
+        }
+
+        // ШАГ 3: ЖЕЛЕЗНАЯ ЛОГИКА ЗАСТАВКИ (Решение проблем 1 и 3)
+        const video = document.getElementById('intro-video');
+        const splash = document.getElementById('splash-screen');
+        const mainApp = document.getElementById('main-app');
+        let isSplashHidden = false;
+
+        function hideSplashScreen() {
+            if (isSplashHidden) return; // Чтобы функция не сработала дважды
+            isSplashHidden = true;
+            
+            splash.style.opacity = '0';
+            mainApp.style.opacity = '1';
+            
+            setTimeout(() => {
+                splash.style.display = 'none';
+                if(video) video.remove(); // Удаляем видео из памяти телефона
+            }, 400);
+        }
+
+        if (video) {
+            video.muted = true;
+            video.defaultMuted = true;
+            
+            let playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("ОС заблокировала видео, ждем таймер");
+                });
+            }
+            video.onended = hideSplashScreen;
+        }
+        
+        // ЖЕЛЕЗНАЯ СТРАХОВКА: Ровно через 3.5 секунды экран в любом случае убирается!
+        setTimeout(hideSplashScreen, 3500);
+
+        // НАВИГАЦИЯ (БЕЗ ИЗМЕНЕНИЙ)
+        let currentScreenId = 'screen-home';
+
+        function openScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            currentScreenId = screenId;
+            
+            if (screenId === 'screen-help') {
+                document.getElementById('nav-tab-1').classList.remove('active');
+                document.getElementById('nav-tab-2').classList.add('active');
+                document.getElementById('nav-indicator').style.transform = "translateX(100%)";
+            } else if (screenId === 'screen-home') {
+                document.getElementById('nav-tab-2').classList.remove('active');
+                document.getElementById('nav-tab-1').classList.add('active');
+                document.getElementById('nav-indicator').style.transform = "translateX(0)";
+            } else {
+                document.getElementById('nav-tab-1').classList.remove('active');
+                document.getElementById('nav-tab-2').classList.remove('active');
+            }
+        }
+
+        function navClickLeft() {
+            if (currentScreenId !== 'screen-home') { openScreen('screen-home'); }
+        }
+
+        function navClickRight() {
+            if (currentScreenId !== 'screen-help') { openScreen('screen-help'); }
+        }
+
+        function openExternalLink(url) { 
+            if (isTgWebApp) window.Telegram.WebApp.openLink(url); else window.open(url, '_blank');
+        }
+        function openTgLink(url) { 
+            if (isTgWebApp) window.Telegram.WebApp.openTelegramLink(url); else window.open(url, '_blank');
+        }
+        function showDevAlert() { 
+            if (isTgWebApp) window.Telegram.WebApp.showAlert('Раздел в разработке'); else alert('Раздел в разработке');
+        }
+    </script>
+</body>
+</html>
