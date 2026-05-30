@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>FreedomPay Web App</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,13 +44,12 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ЗАСТАВКА */
+        /* ЗАСТАВКА (БЕЗЛИШНИХ СТИЛЕЙ И РАМОК) */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 9999; background-color: #000;
+            z-index: 9999; background-color: #000000;
             display: flex; justify-content: center; align-items: center;
             transition: opacity 0.4s ease-out;
-            border: none; outline: none;
         }
         
         #splash-screen video { 
@@ -58,7 +57,6 @@
             object-fit: cover; 
             pointer-events: none; 
             user-select: none;
-            border: none; outline: none;
         }
 
         video::-webkit-media-controls,
@@ -84,13 +82,12 @@
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* СТИЛИ ДЛЯ ДИНАМИЧЕСКОГО ПРИВЕТСТВИЯ */
+        /* СТИЛИ ПРИВЕТСТВИЯ */
         .main-greeting { 
             margin-bottom: 25px;
-            display: block;
+            white-space: nowrap;
         }
 
-        /* Вариант шрифта 1 (Для Привет и Русских имен) */
         .font-bebas {
             font-family: 'Bebas Neue', sans-serif;
             font-style: normal;
@@ -98,9 +95,10 @@
             font-size: 27px;
             line-height: 32px;
             color: #FFFFFF;
+            display: inline-block;
+            vertical-align: baseline;
         }
 
-        /* Вариант шрифта 2 (Для Английских имен) */
         .font-vietnam {
             font-family: 'Be Vietnam Pro', sans-serif;
             font-style: normal;
@@ -108,6 +106,8 @@
             font-size: 25px;
             line-height: 37px;
             color: #FFFFFF;
+            display: inline-block;
+            vertical-align: baseline;
         }
 
         .help-main-title { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 32px; line-height: 38px; color: var(--help-title-color); margin: 0 0 15px 0; }
@@ -340,7 +340,7 @@
                 </div>
 
                 <div class="help-item" onclick="showDevAlert()">
-                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
+                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
                     <div class="help-text">
                         <div class="help-text-title">Оплата сервисов</div>
                         <div class="help-text-sub">OpenAI, Midjourney и др.</div>
@@ -369,13 +369,18 @@
     </div>
 
     <script>
-        // МГНОВЕННОЕ РАЗВЕРТЫВАНИЕ В TELEGRAM
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
+        // БЕЗОПАСНАЯ И КОРРЕКТНАЯ ИНИЦИАЛИЗАЦИЯ ДЛЯ МАКСИМАЛЬНОГО РАСШИРЕНИЯ ШТОРКИ
+        function initTelegramApp() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    window.Telegram.WebApp.ready();
+                    window.Telegram.WebApp.expand();
+                } catch(e) { console.log("Telegram API Error:", e); }
+            }
         }
+        initTelegramApp();
 
-        // ПОЛУЧЕНИЕ ИМЕНИ И АВТОМАТИЧЕСКИЙ ВЫБОР ШРИФТА (Критерии 1 и 2)
+        // ОПРЕДЕЛЕНИЕ ШРИФТА ДЛЯ ИМЕНИ ПО КРИТЕРИЯМ
         let isTgWebApp = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
         let userName = "Гость";
 
@@ -385,30 +390,97 @@
                 userName = userData.first_name;
             }
         } else {
-            userName = "Leonid"; // Для тестов на ПК (можете сменить на русское имя для проверки)
+            userName = "Leonid"; 
         }
 
         const greetingTextSpan = document.getElementById('greeting-text');
         const userNameSpan = document.getElementById('user-name');
-
-        // Записываем имя в интерфейс
         userNameSpan.innerText = userName;
 
-        // Регулярное выражение для проверки латиницы (английских букв) в имени
         let hasEnglishLetters = /[a-zA-Z]/.test(userName);
 
         if (hasEnglishLetters) {
-            // Если имя английское: "Привет, " в Bebas, имя в Be Vietnam
             greetingTextSpan.className = 'font-bebas';
             userNameSpan.className = 'font-vietnam';
         } else {
-            // Если имя русское: вся строка в Bebas Neue
             greetingTextSpan.className = 'font-bebas';
             userNameSpan.className = 'font-bebas';
         }
 
-        // УПРАВЛЕНИЕ ЗАСТАВКОЙ
+        // БЕЗОПАСНОЕ ПЛАВНОЕ СКРЫТИЕ ЗАСТАВКИ ПО ТАЙМЕРУ ИЛИ ОКОНЧАНИЮ ВИДЕО
         const video = document.getElementById('intro-video');
         const splash = document.getElementById('splash-screen');
         const mainApp = document.getElementById('main-app');
         let isSplashHidden = false;
+
+        function hideSplashScreen() {
+            if (isSplashHidden) return;
+            isSplashHidden = true;
+            
+            // Еще раз раскрываем шторку перед показом основного контента (подстраховка)
+            initTelegramApp();
+            
+            splash.style.opacity = '0';
+            mainApp.style.opacity = '1';
+            
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 400);
+        }
+
+        if (video) {
+            video.muted = true;
+            video.defaultMuted = true;
+            video.onended = hideSplashScreen;
+            
+            let playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => { console.log("Autoplay blocked"); });
+            }
+        }
+        
+        // Железный таймер — заставка пропадет через 3.5 секунды в любом случае без зависаний
+        setTimeout(hideSplashScreen, 3500);
+
+        // НАВИГАЦИЯ (КОНТЕНТ КНОПКИ ВСЕГДА СТАТИЧЕН — "ГЛАВНАЯ")
+        let currentScreenId = 'screen-home';
+
+        function openScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            currentScreenId = screenId;
+            
+            if (screenId === 'screen-help') {
+                document.getElementById('nav-tab-1').classList.remove('active');
+                document.getElementById('nav-tab-2').classList.add('active');
+                document.getElementById('nav-indicator').style.transform = "translateX(100%)";
+            } else if (screenId === 'screen-home') {
+                document.getElementById('nav-tab-2').classList.remove('active');
+                document.getElementById('nav-tab-1').classList.add('active');
+                document.getElementById('nav-indicator').style.transform = "translateX(0)";
+            } else {
+                document.getElementById('nav-tab-1').classList.remove('active');
+                document.getElementById('nav-tab-2').classList.remove('active');
+            }
+        }
+
+        function navClickLeft() {
+            if (currentScreenId !== 'screen-home') { openScreen('screen-home'); }
+        }
+
+        function navClickRight() {
+            if (currentScreenId !== 'screen-help') { openScreen('screen-help'); }
+        }
+
+        function openExternalLink(url) { 
+            if (isTgWebApp) window.Telegram.WebApp.openLink(url); else window.open(url, '_blank');
+        }
+        function openTgLink(url) { 
+            if (isTgWebApp) window.Telegram.WebApp.openTelegramLink(url); else window.open(url, '_blank');
+        }
+        function showDevAlert() { 
+            if (isTgWebApp) window.Telegram.WebApp.showAlert('Раздел в разработке'); else alert('Раздел в разработке');
+        }
+    </script>
+</body>
+</html>
