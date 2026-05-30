@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Be+Vietnam+Pro:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
@@ -84,18 +84,35 @@
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ИСПРАВЛЕНИЕ 1: Единый пропорциональный шрифт для приветствия */
+        /* СТИЛИ ДЛЯ ДИНАМИЧЕСКОГО ПРИВЕТСТВИЯ */
         .main-greeting { 
-            font-family: 'DM Sans', sans-serif; 
-            font-weight: 700; 
-            font-size: 24px; 
-            line-height: 32px; 
-            color: var(--text-white); 
-            margin-bottom: 25px; 
+            margin-bottom: 25px;
+            display: block;
         }
+
+        /* Вариант шрифта 1 (Для Привет и Русских имен) */
+        .font-bebas {
+            font-family: 'Bebas Neue', sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 27px;
+            line-height: 32px;
+            color: #FFFFFF;
+        }
+
+        /* Вариант шрифта 2 (Для Английских имен) */
+        .font-vietnam {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 25px;
+            line-height: 37px;
+            color: #FFFFFF;
+        }
+
         .help-main-title { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 32px; line-height: 38px; color: var(--help-title-color); margin: 0 0 15px 0; }
 
-        /* КАРТОЧКИ НА ГЛАВНОЙ (Убран cursor: pointer) */
+        /* КАРТОЧКИ НА ГЛАВНОЙ */
         .card-btn {
             background: var(--card-bg); border: var(--card-border); border-radius: 12px;
             padding: 20px 20px 25px 30px; margin-bottom: 20px;
@@ -111,26 +128,26 @@
         .card-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; line-height: 31px; color: var(--text-white); margin: 0 0 5px 0; }
         .card-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); margin: 0 0 18px 0; }
 
-        /* ИСПРАВЛЕНИЕ 3 и 4: Анимации золотой кнопки */
+        /* АНИМАЦИИ ЗОЛОТОЙ КНОПКИ */
         .btn-gold {
             background: var(--btn-gold); color: var(--text-dark);
             font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; line-height: 18px; text-align: center;
             padding: 10px 24px; border-radius: 20px; border: none; outline: none;
             cursor: pointer;
-            transition: transform 0.2s ease, background 0.2s ease; /* Плавность */
+            transition: transform 0.2s ease, background 0.2s ease;
         }
         .btn-gold:hover { background: #E0BA5C; }
         .btn-gold:active { transform: scale(0.95); }
 
         .details-controls { display: flex; gap: 12px; margin-top: 25px; }
         
-        /* ИСПРАВЛЕНИЕ 5: Анимации кнопки Назад */
+        /* АНИМАЦИИ КНОПКИ НАЗАД */
         .btn-back {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15);
             color: var(--text-white); font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
             padding: 10px 24px; border-radius: 20px; outline: none;
             cursor: pointer;
-            transition: transform 0.2s ease, background 0.2s ease; /* Плавность */
+            transition: transform 0.2s ease, background 0.2s ease;
         }
         .btn-back:hover { background: rgba(255, 255, 255, 0.15); }
         .btn-back:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.2); }
@@ -207,7 +224,10 @@
     <div id="main-app">
         <div class="screens-container">
             <div id="screen-home" class="screen active">
-                <div class="main-greeting">Привет, <span id="user-name">Гость</span>! 👋</div>
+                
+                <div class="main-greeting">
+                    <span id="greeting-text">Привет, </span><span id="user-name">Гость</span><span> 👋</span>
+                </div>
                 
                 <div class="card-btn bybit">
                     <div class="card-title">Bybit Card</div>
@@ -320,7 +340,7 @@
                 </div>
 
                 <div class="help-item" onclick="showDevAlert()">
-                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
+                    <div class="help-icon-wrap"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
                     <div class="help-text">
                         <div class="help-text-title">Оплата сервисов</div>
                         <div class="help-text-sub">OpenAI, Midjourney и др.</div>
@@ -349,90 +369,46 @@
     </div>
 
     <script>
+        // МГНОВЕННОЕ РАЗВЕРТЫВАНИЕ В TELEGRAM
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
         }
 
+        // ПОЛУЧЕНИЕ ИМЕНИ И АВТОМАТИЧЕСКИЙ ВЫБОР ШРИФТА (Критерии 1 и 2)
         let isTgWebApp = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
+        let userName = "Гость";
+
         if (isTgWebApp) {
             let userData = window.Telegram.WebApp.initDataUnsafe?.user;
-            document.getElementById('user-name').innerText = userData ? userData.first_name : "Гость";
+            if (userData && userData.first_name) {
+                userName = userData.first_name;
+            }
         } else {
-            document.getElementById('user-name').innerText = "Тестировщик";
+            userName = "Leonid"; // Для тестов на ПК (можете сменить на русское имя для проверки)
         }
 
+        const greetingTextSpan = document.getElementById('greeting-text');
+        const userNameSpan = document.getElementById('user-name');
+
+        // Записываем имя в интерфейс
+        userNameSpan.innerText = userName;
+
+        // Регулярное выражение для проверки латиницы (английских букв) в имени
+        let hasEnglishLetters = /[a-zA-Z]/.test(userName);
+
+        if (hasEnglishLetters) {
+            // Если имя английское: "Привет, " в Bebas, имя в Be Vietnam
+            greetingTextSpan.className = 'font-bebas';
+            userNameSpan.className = 'font-vietnam';
+        } else {
+            // Если имя русское: вся строка в Bebas Neue
+            greetingTextSpan.className = 'font-bebas';
+            userNameSpan.className = 'font-bebas';
+        }
+
+        // УПРАВЛЕНИЕ ЗАСТАВКОЙ
         const video = document.getElementById('intro-video');
         const splash = document.getElementById('splash-screen');
         const mainApp = document.getElementById('main-app');
         let isSplashHidden = false;
-
-        function hideSplashScreen() {
-            if (isSplashHidden) return;
-            isSplashHidden = true;
-            
-            splash.style.opacity = '0';
-            mainApp.style.opacity = '1';
-            
-            setTimeout(() => {
-                splash.style.display = 'none';
-                if(video) video.remove(); 
-            }, 400);
-        }
-
-        if (video) {
-            video.muted = true;
-            video.defaultMuted = true;
-            
-            let playPromise = video.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("ОС заблокировала видео, ждем таймер");
-                });
-            }
-            video.onended = hideSplashScreen;
-        }
-        
-        setTimeout(hideSplashScreen, 3500);
-
-        let currentScreenId = 'screen-home';
-
-        function openScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            currentScreenId = screenId;
-            
-            if (screenId === 'screen-help') {
-                document.getElementById('nav-tab-1').classList.remove('active');
-                document.getElementById('nav-tab-2').classList.add('active');
-                document.getElementById('nav-indicator').style.transform = "translateX(100%)";
-            } else if (screenId === 'screen-home') {
-                document.getElementById('nav-tab-2').classList.remove('active');
-                document.getElementById('nav-tab-1').classList.add('active');
-                document.getElementById('nav-indicator').style.transform = "translateX(0)";
-            } else {
-                document.getElementById('nav-tab-1').classList.remove('active');
-                document.getElementById('nav-tab-2').classList.remove('active');
-            }
-        }
-
-        function navClickLeft() {
-            if (currentScreenId !== 'screen-home') { openScreen('screen-home'); }
-        }
-
-        function navClickRight() {
-            if (currentScreenId !== 'screen-help') { openScreen('screen-help'); }
-        }
-
-        function openExternalLink(url) { 
-            if (isTgWebApp) window.Telegram.WebApp.openLink(url); else window.open(url, '_blank');
-        }
-        function openTgLink(url) { 
-            if (isTgWebApp) window.Telegram.WebApp.openTelegramLink(url); else window.open(url, '_blank');
-        }
-        function showDevAlert() { 
-            if (isTgWebApp) window.Telegram.WebApp.showAlert('Раздел в разработке'); else alert('Раздел в разработке');
-        }
-    </script>
-</body>
-</html>
