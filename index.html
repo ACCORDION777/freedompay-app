@@ -18,15 +18,12 @@
             --card-border: 1px solid rgba(255, 255, 255, 0.1);
             --card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
             --btn-gold: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%);
-            
             --text-white: #FFFFFF;
             --text-gray: #AAAAAA;
             --text-dark: #121212;
-            
             --color-bybit: #F7A600;
             --color-pionex: #FF6B00;
             --color-viza: #EF3124;
-            
             --help-title-color: #F0EFE8;
             --help-sub-color: #9A9A9E;
             --help-icon-bg: #161618;
@@ -44,11 +41,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ЗАСТАВКА - БЕЗ ТРАНЗИЦИЙ И ЗАДЕРЖЕК */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; background-color: #000000;
             display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.4s ease-out;
         }
         
         #splash-screen video { 
@@ -65,12 +62,10 @@
             -webkit-appearance: none !important;
         }
 
-        /* ИНТЕРФЕЙС */
         #main-app {
             position: relative; width: 100%; height: 100%;
-            opacity: 0; z-index: 1;
+            opacity: 0; transition: opacity 0.4s ease-in; z-index: 1;
             display: flex; flex-direction: column;
-            transition: opacity 0.3s ease-in; /* Оставили только плавное появление интерфейса */
         }
 
         .screens-container {
@@ -82,10 +77,9 @@
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* СТИЛИ ПРИВЕТСТВИЯ */
+        /* ИСПРАВЛЕНО: Текст идет в строчку без съедания пробелов */
         .main-greeting { 
             margin-bottom: 25px;
-            white-space: nowrap;
         }
 
         .font-bebas {
@@ -95,8 +89,6 @@
             font-size: 27px;
             line-height: 32px;
             color: #FFFFFF;
-            display: inline-block;
-            vertical-align: baseline;
         }
 
         .font-vietnam {
@@ -106,13 +98,10 @@
             font-size: 25px;
             line-height: 37px;
             color: #FFFFFF;
-            display: inline-block;
-            vertical-align: baseline;
         }
 
         .help-main-title { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 32px; line-height: 38px; color: var(--help-title-color); margin: 0 0 15px 0; }
 
-        /* КАРТОЧКИ НА ГЛАВНОЙ */
         .card-btn {
             background: var(--card-bg); border: var(--card-border); border-radius: 12px;
             padding: 20px 20px 25px 30px; margin-bottom: 20px;
@@ -128,7 +117,6 @@
         .card-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; line-height: 31px; color: var(--text-white); margin: 0 0 5px 0; }
         .card-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); margin: 0 0 18px 0; }
 
-        /* АНИМАЦИИ ЗОЛОТОЙ КНОПКИ */
         .btn-gold {
             background: var(--btn-gold); color: var(--text-dark);
             font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; line-height: 18px; text-align: center;
@@ -141,7 +129,6 @@
 
         .details-controls { display: flex; gap: 12px; margin-top: 25px; }
         
-        /* АНИМАЦИИ КНОПКИ НАЗАД */
         .btn-back {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15);
             color: var(--text-white); font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
@@ -152,7 +139,6 @@
         .btn-back:hover { background: rgba(255, 255, 255, 0.15); }
         .btn-back:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.2); }
 
-        /* ВНУТРЕННИЕ ЭКРАНЫ КАРТ */
         .details-title-wrap { position: relative; padding-left: 15px; margin-bottom: 15px; }
         .details-title-wrap::before { content: ''; position: absolute; left: 0; top: 4px; width: 4px; height: 26px; border-radius: 4px; }
         .details-bybit::before { background-color: var(--color-bybit); }
@@ -162,7 +148,6 @@
         .details-title { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 24px; line-height: 31px; color: var(--text-white); }
         .details-desc { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 15px; line-height: 20px; color: var(--text-gray); }
 
-        /* ПОМОЩЬ */
         .help-list-title {
             font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px; line-height: 16px;
             color: var(--help-sub-color); margin: 30px 0 15px 0; text-transform: uppercase; letter-spacing: 0.5px;
@@ -191,7 +176,6 @@
         .help-text-sub { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 13px; line-height: 17px; color: var(--help-sub-color); margin-top: 3px; }
         .help-arrow { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 20px; line-height: 26px; color: var(--help-arrow-color); }
 
-        /* МЕНЮ НИЗ */
         #nav-menu {
             position: fixed; left: 7.69%; right: 7.69%; bottom: 5.69%; height: 60px;
             background: rgba(20, 20, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.08);
@@ -225,8 +209,9 @@
         <div class="screens-container">
             <div id="screen-home" class="screen active">
                 
+                <!-- ИСПРАВЛЕНО: Пробел вшит вручную после запятой. Смайлик обернут в span с базовым шрифтом -->
                 <div class="main-greeting">
-                    <span id="greeting-text">Привет, </span><span id="user-name">Гость</span><span> 👋</span>
+                    <span id="greeting-text" class="font-bebas">Привет, </span><span id="user-name" class="font-bebas">Гость</span><span class="font-bebas"> 👋</span>
                 </div>
                 
                 <div class="card-btn bybit">
@@ -369,15 +354,11 @@
     </div>
 
     <script>
-        // ИНИЦИАЛИЗАЦИЯ И ПОЛНЫЙ ЭКРАН
         if (window.Telegram && window.Telegram.WebApp) {
-            try {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-            } catch(e) {}
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
         }
 
-        // ШРИФТЫ И ИМЯ
         let isTgWebApp = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
         let userName = "Гость";
 
@@ -390,56 +371,47 @@
             userName = "Leonid"; 
         }
 
-        const greetingTextSpan = document.getElementById('greeting-text');
         const userNameSpan = document.getElementById('user-name');
         userNameSpan.innerText = userName;
 
         let hasEnglishLetters = /[a-zA-Z]/.test(userName);
 
         if (hasEnglishLetters) {
-            greetingTextSpan.className = 'font-bebas';
             userNameSpan.className = 'font-vietnam';
         } else {
-            greetingTextSpan.className = 'font-bebas';
             userNameSpan.className = 'font-bebas';
         }
 
-        // БРОНЕБОЙНОЕ СКРЫТИЕ ЭКРАНА ЗАСТАВКИ
         const video = document.getElementById('intro-video');
+        const splash = document.getElementById('splash-screen');
+        const mainApp = document.getElementById('main-app');
         let isSplashHidden = false;
 
         function hideSplashScreen() {
             if (isSplashHidden) return;
             isSplashHidden = true;
             
-            // Мгновенно убиваем экран (никаких зависаний слоев)
-            document.getElementById('splash-screen').style.display = 'none';
-            // Показываем интерфейс
-            document.getElementById('main-app').style.opacity = '1';
+            splash.style.opacity = '0';
+            mainApp.style.opacity = '1';
             
-            // Принудительно глушим видео, чтобы телефон не тормозил
-            if(video) {
-                video.pause();
-                video.removeAttribute('src'); 
-                video.load(); 
-            }
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 400);
         }
 
         if (video) {
             video.muted = true;
             video.defaultMuted = true;
-            video.onended = hideSplashScreen;
             
             let playPromise = video.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => { console.log("Autoplay blocked"); });
             }
+            video.onended = hideSplashScreen;
         }
         
-        // ЖЕСТКИЙ ТАЙМЕР: Через 3 секунды экран уничтожается независимо ни от чего.
-        setTimeout(hideSplashScreen, 3000);
+        setTimeout(hideSplashScreen, 3500);
 
-        // НАВИГАЦИЯ
         let currentScreenId = 'screen-home';
 
         function openScreen(screenId) {
