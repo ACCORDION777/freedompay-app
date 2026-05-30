@@ -44,12 +44,11 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ЗАСТАВКА (БЕЗЛИШНИХ СТИЛЕЙ И РАМОК) */
+        /* ЗАСТАВКА - БЕЗ ТРАНЗИЦИЙ И ЗАДЕРЖЕК */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; background-color: #000000;
             display: flex; justify-content: center; align-items: center;
-            transition: opacity 0.4s ease-out;
         }
         
         #splash-screen video { 
@@ -69,8 +68,9 @@
         /* ИНТЕРФЕЙС */
         #main-app {
             position: relative; width: 100%; height: 100%;
-            opacity: 0; transition: opacity 0.4s ease-in; z-index: 1;
+            opacity: 0; z-index: 1;
             display: flex; flex-direction: column;
+            transition: opacity 0.3s ease-in; /* Оставили только плавное появление интерфейса */
         }
 
         .screens-container {
@@ -369,18 +369,15 @@
     </div>
 
     <script>
-        // БЕЗОПАСНАЯ И КОРРЕКТНАЯ ИНИЦИАЛИЗАЦИЯ ДЛЯ МАКСИМАЛЬНОГО РАСШИРЕНИЯ ШТОРКИ
-        function initTelegramApp() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                try {
-                    window.Telegram.WebApp.ready();
-                    window.Telegram.WebApp.expand();
-                } catch(e) { console.log("Telegram API Error:", e); }
-            }
+        // ИНИЦИАЛИЗАЦИЯ И ПОЛНЫЙ ЭКРАН
+        if (window.Telegram && window.Telegram.WebApp) {
+            try {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            } catch(e) {}
         }
-        initTelegramApp();
 
-        // ОПРЕДЕЛЕНИЕ ШРИФТА ДЛЯ ИМЕНИ ПО КРИТЕРИЯМ
+        // ШРИФТЫ И ИМЯ
         let isTgWebApp = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
         let userName = "Гость";
 
@@ -407,25 +404,25 @@
             userNameSpan.className = 'font-bebas';
         }
 
-        // БЕЗОПАСНОЕ ПЛАВНОЕ СКРЫТИЕ ЗАСТАВКИ ПО ТАЙМЕРУ ИЛИ ОКОНЧАНИЮ ВИДЕО
+        // БРОНЕБОЙНОЕ СКРЫТИЕ ЭКРАНА ЗАСТАВКИ
         const video = document.getElementById('intro-video');
-        const splash = document.getElementById('splash-screen');
-        const mainApp = document.getElementById('main-app');
         let isSplashHidden = false;
 
         function hideSplashScreen() {
             if (isSplashHidden) return;
             isSplashHidden = true;
             
-            // Еще раз раскрываем шторку перед показом основного контента (подстраховка)
-            initTelegramApp();
+            // Мгновенно убиваем экран (никаких зависаний слоев)
+            document.getElementById('splash-screen').style.display = 'none';
+            // Показываем интерфейс
+            document.getElementById('main-app').style.opacity = '1';
             
-            splash.style.opacity = '0';
-            mainApp.style.opacity = '1';
-            
-            setTimeout(() => {
-                splash.style.display = 'none';
-            }, 400);
+            // Принудительно глушим видео, чтобы телефон не тормозил
+            if(video) {
+                video.pause();
+                video.removeAttribute('src'); 
+                video.load(); 
+            }
         }
 
         if (video) {
@@ -439,10 +436,10 @@
             }
         }
         
-        // Железный таймер — заставка пропадет через 3.5 секунды в любом случае без зависаний
-        setTimeout(hideSplashScreen, 3500);
+        // ЖЕСТКИЙ ТАЙМЕР: Через 3 секунды экран уничтожается независимо ни от чего.
+        setTimeout(hideSplashScreen, 3000);
 
-        // НАВИГАЦИЯ (КОНТЕНТ КНОПКИ ВСЕГДА СТАТИЧЕН — "ГЛАВНАЯ")
+        // НАВИГАЦИЯ
         let currentScreenId = 'screen-home';
 
         function openScreen(screenId) {
